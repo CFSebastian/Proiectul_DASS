@@ -1,0 +1,66 @@
+<h2>Welcome {{ email }}</h2>
+
+<a href="/logout">Logout</a>
+
+<hr>
+
+<!-- Cauare -->
+<form method="GET" action="/">
+    <input type="text" name="q" placeholder="Search tickets..." value="{{ query }}">
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<!-- Creare ticket -->
+<h3>Create Ticket</h3>
+<form method="POST" action="/tickets/create">
+    <input name="title" placeholder="Title" required><br>
+    <input name="description" value="{{ description | safe }}"><br>
+
+    <select name="severity">
+        <option>LOW</option>
+        <option>MED</option>
+        <option>HIGH</option>
+    </select>
+
+    <button type="submit">Create</button>
+</form>
+
+<hr>
+
+<!-- Listare ticket -->
+<h3>Your Tickets</h3>
+
+{% for t in tickets %}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+        <b>{{ t.title }}</b> ({{ t.severity }}) - {{ t.status }}<br>
+        <p>Creat la: {{t.created_at}}; Modificat ultima data la: {{t.updated_at}}</p>
+        <p>{{ t.description | safe }}</p>
+
+        <!-- Editare -->
+        <form method="POST" action="/tickets/edit/{{ t.id }}">
+            <input name="title" value="{{ t.title }}">
+            <input name="description" value="{{ t.description | safe }}">
+
+            <select name="severity">
+                <option {% if t.severity=='LOW' %}selected{% endif %}>LOW</option>
+                <option {% if t.severity=='MED' %}selected{% endif %}>MED</option>
+                <option {% if t.severity=='HIGH' %}selected{% endif %}>HIGH</option>
+            </select>
+
+            <select name="status">
+                <option {% if t.status=='OPEN' %}selected{% endif %}>OPEN</option>
+                <option {% if t.status=='IN_PROGRESS' %}selected{% endif %}>IN_PROGRESS</option>
+                <option {% if t.status=='RESOLVED' %}selected{% endif %}>RESOLVED</option>
+            </select>
+
+            <button type="submit">Update</button>
+        </form>
+
+        <!-- Stergere -->
+        <form method="POST" action="/tickets/delete/{{ t.id }}">
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+{% endfor %}
